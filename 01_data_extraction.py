@@ -2,6 +2,7 @@ import yfinance as yf
 import pandas as pd
 
 TICKERS = []
+CIFS = []
 
 
 def download_stock_data(ticker, start_date, end_date):
@@ -20,11 +21,12 @@ def write_avro_file(start_date, end_date):
         end_date (string): End date in YYYY-MM-DD format
     """
 
-    avro_dataframe = pd.DataFrame('Date', 'Ticker', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume')
+    avro_dataframe = pd.DataFrame('Date', 'Ticker', 'CIF', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume')
 
-    for ticker in TICKERS:
+    for i, ticker in enumerate(TICKERS):
         data = download_stock_data(ticker, start_date, end_date)
         data['Ticker'] = ticker
+        data['CIF'] = CIFS[i]
 
         avro_dataframe.append(data)
 
