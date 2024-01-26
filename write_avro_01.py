@@ -11,7 +11,9 @@ def write_avro_file(start_date, end_date):
     """
     year_data = download_year_data(start_date, end_date)
 
-    year_data['Date'] = year_data['date'].dt.strftime('%Y-%m-%d')
+    year_data['Date'] = year_data['Date'].dt.strftime('%Y-%m-%d')
+
+    year_data.to_csv("prueba.csv")
 
     schema = {
         "namespace": "ConsumerDiscretionary_2",

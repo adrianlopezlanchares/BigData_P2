@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 
-TICKERS = []
+TICKERS = ["ABNB", "AMZN", "APTV", "AZO", "BBWI", "BBY"]
 # CIFS = []
 
 
@@ -35,7 +35,7 @@ def download_year_data(start_date, end_date):
     """
 
     # Falta poner columna CIF
-    year_data = pd.DataFrame('Date', 'Ticker', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume')
+    year_data = pd.DataFrame(columns=['Ticker', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume'])
 
     for i, ticker in enumerate(TICKERS):
         data = download_stock_data(ticker, start_date, end_date)
@@ -44,8 +44,10 @@ def download_year_data(start_date, end_date):
 
         year_data = pd.concat([year_data, data])
 
+    year_data = year_data.reset_index().rename(columns={"index": "Date"})
+
     year_data['Date'] = pd.to_datetime(year_data['Date'])
 
+    year_data.sort_values(by=["Date"]) # NO LO HACE BIEN: FECHAS REPETIDAS DEBERIAN IR SEGUIDAS
+
     return year_data
-
-
