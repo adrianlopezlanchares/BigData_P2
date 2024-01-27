@@ -1,5 +1,7 @@
-from data_download_01 import *
 from fastavro import parse_schema, reader, writer
+
+# own imports
+from data_download_01 import *
 
 
 def write_avro_file(start_date, end_date):
