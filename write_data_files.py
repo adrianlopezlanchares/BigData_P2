@@ -1,7 +1,7 @@
 from fastavro import parse_schema, reader, writer
 
 # own imports
-from data_download_01 import *
+from data_download import *
 
 
 def write_avro_file(start_date: str, end_date: str):
@@ -84,7 +84,10 @@ def write_xlsx_file(start_date: str, end_date: str):
 
 def main():
 
-    write_avro_file("2023-01-01", "2024-01-01")
+    write_avro_file("2018-01-01", "2019-01-01")
+    write_csv_file("2019-01-01", "2020-01-01")
+    write_json_file("2020-01-01", "2021-01-01")
+    write_xlsx_file("2021-01-01", "2022-01-01")
 
     return
 
