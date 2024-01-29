@@ -11,7 +11,8 @@ TICKERS = ['ABNB', 'AMZN', 'APTV', 'AZO', 'BBWI', 'BBY', 'BKNG', 'BWA',
            'TPR', 'TSCO', 'TSLA', 'ULTA', 'VFC', 'WHR', 'WYNN', 'YUM']
 
 
-def get_companies_dataframe(start_date: str, end_date: str, tickers: list[str] = TICKERS) -> pd.DataFrame:
+def get_companies_dataframe(start_date: str, end_date: str, 
+                            tickers: list[str] = TICKERS, verbose: bool = False) -> pd.DataFrame:
     """Downloads data from yfinance for the selected time period for
     all companies in 'tickers' and returns a dataframe with the data.
     'ticker' defaults to all companies in the Consumer Discretionary
@@ -23,11 +24,16 @@ def get_companies_dataframe(start_date: str, end_date: str, tickers: list[str] =
     
     Returns:
         pd.DataFrame: Dataframe containing data from all companies in 'tickers'"""
+    
+    year = start_date[:4]
+
+    if verbose:
+        print(f"\nDownloading data from {year}...")
 
     df_lst = []
     for ticker in tickers:
         # Download data from yfinance
-        df = yf.download(ticker, start=start_date, end=end_date)
+        df = yf.download(ticker, start=start_date, end=end_date, progress=False)
         
         # Add ticker column to dataframe
         df["Ticker"] = ticker
@@ -45,4 +51,8 @@ def get_companies_dataframe(start_date: str, end_date: str, tickers: list[str] =
     df_companies = df_companies.sort_values(by=["Date", "Ticker"])
     df_companies = df_companies.reset_index(drop=True)
     df_companies["Date"] = df_companies["Date"].dt.strftime("%Y-%m-%d")
+
+    if verbose:
+        print("Done.\n")
+
     return df_companies

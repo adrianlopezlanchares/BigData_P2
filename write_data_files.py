@@ -13,7 +13,7 @@ def write_avro_file(start_date: str, end_date: str):
     """
     year = start_date[:4]
 
-    year_data = get_companies_dataframe(start_date, end_date)
+    year_data = get_companies_dataframe(start_date, end_date, verbose=True)
 
 
     schema = {
@@ -35,7 +35,7 @@ def write_avro_file(start_date: str, end_date: str):
 
     records = year_data.to_dict("records")
 
-    with open(f"data/stock_data_{year}", "wb") as out:
+    with open(f"data/stock_data_{year}.avro", "wb") as out:
         writer(out, parsed_schema, records)
 
     return
@@ -49,7 +49,7 @@ def write_csv_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date)
+    df = get_companies_dataframe(start_date, end_date, verbose=True)
     df.to_csv(f"data/stock_data_{year}.csv", index=False)
 
     return
@@ -63,7 +63,7 @@ def write_json_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date)
+    df = get_companies_dataframe(start_date, end_date, verbose=True)
     df.to_json(f"data/stock_data_{year}.json", orient="records")
 
     return
@@ -77,7 +77,7 @@ def write_xlsx_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date)
+    df = get_companies_dataframe(start_date, end_date, verbose=True)
     df.to_excel(f"data/stock_data_{year}.xlsx", index=False)
 
     return
