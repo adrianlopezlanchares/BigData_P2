@@ -1,6 +1,5 @@
 import yfinance as yf
 import pandas as pd
-from datetime import datetime
 
 
 TICKERS = ['ABNB', 'AMZN', 'APTV', 'AZO', 'BBWI', 'BBY', 'BKNG', 'BWA',
