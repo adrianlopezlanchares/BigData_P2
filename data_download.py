@@ -45,7 +45,8 @@ def get_companies_dataframe(start_date: str, end_date: str,
 
         df_lst.append(df)
 
-    df_companies = pd.concat(df_lst)
+    df_companies = pd.concat([df for df in df_lst if not df.empty])
+
     df_companies["Date"] = pd.to_datetime(df_companies["Date"])
     df_companies = df_companies.sort_values(by=["Date", "Ticker"])
     df_companies = df_companies.reset_index(drop=True)
