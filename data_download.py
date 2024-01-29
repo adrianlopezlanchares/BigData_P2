@@ -1,5 +1,6 @@
 import yfinance as yf
 import pandas as pd
+from datetime import datetime
 
 
 TICKERS = ['ABNB', 'AMZN', 'APTV', 'AZO', 'BBWI', 'BBY', 'BKNG', 'BWA',
@@ -43,4 +44,5 @@ def get_companies_dataframe(start_date: str, end_date: str, tickers: list[str] =
     df_companies["Date"] = pd.to_datetime(df_companies["Date"])
     df_companies = df_companies.sort_values(by=["Date", "Ticker"])
     df_companies = df_companies.reset_index(drop=True)
+    df_companies["Date"] = df_companies["Date"].dt.strftime("%Y-%m-%d")
     return df_companies

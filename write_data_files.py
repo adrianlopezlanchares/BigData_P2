@@ -1,4 +1,4 @@
-from fastavro import parse_schema, reader, writer
+from fastavro import parse_schema, writer
 
 # own imports
 from data_download import *
@@ -11,10 +11,10 @@ def write_avro_file(start_date: str, end_date: str):
         start_date (string): Start date in YYY-MMM-DD format
         end_date (string): End date in YYY-MM-DD format
     """
+    year = start_date[:4]
+
     year_data = get_companies_dataframe(start_date, end_date)
 
-    # Para comprobar el formato del DataFrame resultante
-    # year_data.to_csv("prueba.csv")
 
     schema = {
         "namespace": "ConsumerDiscretionary_2",
@@ -35,7 +35,7 @@ def write_avro_file(start_date: str, end_date: str):
 
     records = year_data.to_dict("records")
 
-    with open(f"data/data_{start_date}_{end_date}", "wb") as out:
+    with open(f"data/stock_data_{year}", "wb") as out:
         writer(out, parsed_schema, records)
 
     return
