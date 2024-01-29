@@ -32,6 +32,7 @@ def get_companies_dataframe(start_date: str, end_date: str,
     df_lst = []
     for ticker in tickers:
         # Download data from yfinance
+        # Da error para ABNB en 2018 y 2019, no hay datos
         df = yf.download(ticker, start=start_date, end=end_date, progress=False)
         
         # Add ticker column to dataframe
