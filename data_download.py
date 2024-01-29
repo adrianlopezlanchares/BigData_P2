@@ -16,6 +16,9 @@ def get_companies_dataframe(start_date: str, end_date: str,
     all companies in 'tickers' and returns a dataframe with the data.
     'ticker' defaults to all companies in the Consumer Discretionary
     sector in the S&P 500.
+
+    This function works as a generator, yielding each time the dataframe containing info about each stock.
+    This is done in order to not load all the data into memory, so we only load data from each stock each time.
     
     Args:
         start_date (str): Start date in YYYY-MM-DD format
@@ -29,11 +32,11 @@ def get_companies_dataframe(start_date: str, end_date: str,
     if verbose:
         print(f"\nDownloading data from {year}...")
 
-    df_lst = []
     for ticker in tickers:
         # Download data from yfinance
         # Da error para ABNB en 2018 y 2019, no hay datos
         df = yf.download(ticker, start=start_date, end=end_date, progress=False)
+
         
         # Add ticker column to dataframe
         df["Ticker"] = ticker
@@ -44,16 +47,7 @@ def get_companies_dataframe(start_date: str, end_date: str,
         # Change the date from index to column
         df = df.reset_index()
 
-        df_lst.append(df)
+        df.sort_values(by="Date")
+        df["Date"] = df["Date"].astype(str)
 
-    df_companies = pd.concat([df for df in df_lst if not df.empty])
-
-    df_companies["Date"] = pd.to_datetime(df_companies["Date"])
-    df_companies = df_companies.sort_values(by=["Date", "Ticker"])
-    df_companies = df_companies.reset_index(drop=True)
-    df_companies["Date"] = df_companies["Date"].dt.strftime("%Y-%m-%d")
-
-    if verbose:
-        print("Done.\n")
-
-    return df_companies
+        yield df
