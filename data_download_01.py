@@ -1,76 +1,46 @@
 import yfinance as yf
 import pandas as pd
 
-TICKERS = ["ABNB", "AMZN", "APTV", "AZO", "BBWI", "BBY"]
-# CIFS = []
+
+TICKERS = ['ABNB', 'AMZN', 'APTV', 'AZO', 'BBWI', 'BBY', 'BKNG', 'BWA',
+           'CCL', 'CMG', 'CZR', 'DHI', 'DPZ', 'DRI', 'EBAY', 'ETSY', 'EXPE',
+           'F', 'GM', 'GPC', 'GRMN', 'HAS', 'HD', 'HTL', 'KMX', 'LEN', 'LKQ',
+           'LOW', 'LULU', 'LVS', 'MAR', 'MCD', 'MGM', 'MHK', 'NCLH', 'NKE',
+           'NVR', 'ORLY', 'PHM', 'POOL', 'RCL', 'RL', 'ROST', 'SBUX', 'TJX',
+           'TPR', 'TSCO', 'TSLA', 'ULTA', 'VFC', 'WHR', 'WYNN', 'YUM']
 
 
-def download_stock_data(ticker, start_date, end_date):
-    """Downloads data from selected time period and stock
-
-    Args:
-        ticker (string): Ticker symbol for the selected stock
-        start_date (string): Start date in YYYY-MM-DD format
-        end_date (_type_): End date in YYYY-MM-DD format
-
-    Returns:
-        pandas.DataFrame: Dataframe containing downloaded data
-    """
-
-    data = yf.download(ticker, start=start_date, end=end_date)
-
-    return data
-
-
-def download_year_data(start_date, end_date):
-    """Downloads data from the selected year (end_date - start_date) and writes it
-       into a .avro file
-
-    Args:
-        start_date (string): Start date in YYYY-MM-DD format
-        end_date (string): End date in YYYY-MM-DD format
-
-    Returns:
-        pandas.DataFrame: Dataframe containing data from all stocks in the sector, for the selected year
-    """
-
-    columns = ['Ticker', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
-
-    # Falta poner columna CIF
+def get_companies_dataframe(start_date: str, end_date: str, tickers: list[str] = TICKERS) -> pd.DataFrame:
+    """Downloads data from yfinance for the selected time period for
+    all companies in 'tickers' and returns a dataframe with the data.
+    'ticker' defaults to all companies in the Consumer Discretionary
+    sector in the S&P 500.
     
-    stock_data = {ticker: None for ticker in TICKERS}
-
-    for i, ticker in enumerate(TICKERS):
-        data = download_stock_data(ticker, start_date, end_date)
-        data['Ticker'] = ticker
-        # data['CIF'] = CIFS[i]
-
-        stock_data[ticker] = data
-
-        stock_data[ticker] = stock_data[ticker].reset_index().rename(columns={"index": "Date"})
-        stock_data[ticker]['Date'] = pd.to_datetime(stock_data[ticker]['Date'])
-        stock_data[ticker].sort_values(by=["Date"])
-        stock_data[ticker]['Date'] = stock_data[ticker]['Date'].astype(str)
-
-
-    # Melt each DataFrame to have 'Date', 'Ticker', and other columns
-    melted_dfs = [pd.melt(stock_data[ticker], 
-                          id_vars=['Date', 'Ticker'], 
-                          value_vars=['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume'], 
-                          var_name='Variable', 
-                          value_name='Value') for ticker in stock_data]
-
-    # Concatenate the melted DataFrames
-    year_data = pd.concat(melted_dfs, ignore_index=True)
-
-    # Sort the DataFrame by 'Date' and 'Ticker'
-    year_data = year_data.sort_values(by=['Date', 'Ticker'])
-
-    # Pivot the DataFrame to have 'Variable' as columns
-    year_data = year_data.pivot(index=['Date', 'Ticker'], columns='Variable', values='Value').reset_index()
-
-    # Reorder the columns
-    year_data = year_data[['Date', 'Ticker', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']]
+    Args:
+        start_date (str): Start date in YYYY-MM-DD format
+        end_date (str): End date in YYYY-MM-DD format
     
+    Returns:
+        pd.DataFrame: Dataframe containing data from all companies in 'tickers'"""
 
-    return year_data
+    df_lst = []
+    for ticker in tickers:
+        # Download data from yfinance
+        df = yf.download(ticker, start=start_date, end=end_date)
+        
+        # Add ticker column to dataframe
+        df["Ticker"] = ticker
+
+        # Change order: date, ticker, open, high, low, close, adj_close, volume
+        df = df[["Ticker", "Open", "High", "Low", "Close", "Adj Close", "Volume"]]
+
+        # Change the date from index to column
+        df = df.reset_index()
+
+        df_lst.append(df)
+
+    df_companies = pd.concat(df_lst)
+    df_companies["Date"] = pd.to_datetime(df_companies["Date"])
+    df_companies = df_companies.sort_values(by=["Date", "Ticker"])
+    df_companies = df_companies.reset_index(drop=True)
+    return df_companies
