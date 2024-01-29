@@ -3,6 +3,8 @@ from fastavro import parse_schema, writer
 # own imports
 from data_download import *
 
+VERBOSE = True # TRUE si se quiere ver el proceso de las descargas de datos
+
 
 def write_avro_file(start_date: str, end_date: str):
     """Downloads data from all stocks for the selected time period, and writes a .avro file containing the data.
@@ -13,7 +15,7 @@ def write_avro_file(start_date: str, end_date: str):
     """
     year = start_date[:4]
 
-    year_data = get_companies_dataframe(start_date, end_date, verbose=True)
+    year_data = get_companies_dataframe(start_date, end_date, verbose=VERBOSE)
 
 
     schema = {
@@ -49,7 +51,7 @@ def write_csv_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date, verbose=True)
+    df = get_companies_dataframe(start_date, end_date, verbose=VERBOSE)
     df.to_csv(f"data/stock_data_{year}.csv", index=False)
 
     return
@@ -63,7 +65,7 @@ def write_json_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date, verbose=True)
+    df = get_companies_dataframe(start_date, end_date, verbose=VERBOSE)
     df.to_json(f"data/stock_data_{year}.json", orient="records")
 
     return
@@ -77,7 +79,7 @@ def write_xlsx_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date, verbose=True)
+    df = get_companies_dataframe(start_date, end_date, verbose=VERBOSE)
     df.to_excel(f"data/stock_data_{year}.xlsx", index=False)
 
     return
