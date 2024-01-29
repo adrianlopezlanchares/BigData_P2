@@ -1,9 +1,10 @@
 from fastavro import parse_schema, writer
+import csv
+import json
 
 # own imports
 from data_download import *
 
-VERBOSE = True # TRUE si se quiere ver el proceso de las descargas de datos
 
 
 def write_avro_file(start_date: str, end_date: str):
@@ -14,9 +15,6 @@ def write_avro_file(start_date: str, end_date: str):
         end_date (string): End date in YYY-MM-DD format
     """
     year = start_date[:4]
-
-    year_data = get_companies_dataframe(start_date, end_date, verbose=VERBOSE)
-
 
     schema = {
         "namespace": "ConsumerDiscretionary_2",
@@ -35,10 +33,23 @@ def write_avro_file(start_date: str, end_date: str):
     }
     parsed_schema = parse_schema(schema)
 
-    records = year_data.to_dict("records")
 
     with open(f"data/stock_data_{year}.avro", "wb") as out:
-        writer(out, parsed_schema, records)
+        for df in get_companies_dataframe(start_date, end_date):
+            records = df.to_dict("records")
+            writer(out, parsed_schema, records)
+            
+            break
+
+    with open(f"data/stock_data_{year}.avro", "a+b") as out:
+        i = 0
+        for df in get_companies_dataframe(start_date, end_date):
+            if i != 0:
+                records = df.to_dict("records")
+                writer(out, parsed_schema, records)
+            i += 1
+            
+
 
     return
 
@@ -51,8 +62,20 @@ def write_csv_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date, verbose=VERBOSE)
-    df.to_csv(f"data/stock_data_{year}.csv", index=False)
+    
+    with open(f"data/stock_data_{year}.csv", "w") as file:
+        writer = csv.writer(file)
+
+        i = 0
+
+        for df in get_companies_dataframe(start_date=start_date, end_date=end_date):
+            if i == 0:
+                writer.writerow(df.columns)
+
+            for _, row in df.iterrows():
+                writer.writerow(row)
+            i += 1
+
 
     return
 
@@ -65,8 +88,22 @@ def write_json_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date, verbose=VERBOSE)
-    df.to_json(f"data/stock_data_{year}.json", orient="records")
+    with open(f"data/stock_data_{year}.json", 'w') as file:
+        # Start writing the JSON array
+        file.write('[')
+        
+        # Iterate through the generator function and write each DataFrame to the file
+        for i, df in enumerate(get_companies_dataframe(start_date, end_date)):
+            # Convert the DataFrame to a dictionary and write it to the file
+            df_dict = df.to_dict(orient='records')
+            json.dump(df_dict, file, indent=4)
+            
+            # Only write ',' if it's not the last item (there are 52 stocks)
+            if i < 52:
+                file.write(',')
+
+        # End the JSON array
+        file.write(']')
 
     return
 
@@ -79,8 +116,15 @@ def write_xlsx_file(start_date: str, end_date: str):
     """
 
     year = start_date[:4]
-    df = get_companies_dataframe(start_date, end_date, verbose=VERBOSE)
-    df.to_excel(f"data/stock_data_{year}.xlsx", index=False)
+    current_row = 0
+    
+    with pd.ExcelWriter(f"data/stock_data_{year}.xlsx", engine='xlsxwriter') as writer:
+        for i, df in enumerate(get_companies_dataframe(start_date, end_date)):
+            
+            # Write the DataFrame to the Excel file
+            df.to_excel(writer, sheet_name='Sheet', index=False, startrow=current_row, header=(current_row==0))
+
+            current_row += len(df)
 
     return
 
