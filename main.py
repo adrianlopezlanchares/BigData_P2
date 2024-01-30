@@ -1,16 +1,63 @@
 from datawriter import DataWriter
+import sys 
+
+
+def write_selected_data(dataWriter: DataWriter, file_format: str, year: int) -> bool:
+    """Given the file format and the year, the function writes the data from said year into
+       the correct file format
+
+    Args:
+        dataWriter (DataWriter): DataWriter class that will write the data into the file
+        file_format (str): Selected file format (CSV, JSON, ORC, XLSX, AVRO, Parquet)
+        year (int): Year to download the data from
+
+    Returns:
+        bool: True if process carried out succesfully, false if it didn't
+    """
+    success = True
+
+    try:
+        start_date = f"{year}-01-01"
+        end_date = f"{int(year) + 1}-01-01"
+
+        file_format = file_format.lower()
+
+        if file_format == 'csv':
+            dataWriter.write_csv_file(start_date, end_date)
+        elif file_format == 'json':
+            dataWriter.write_json_file(start_date, end_date)
+        elif file_format == 'orc':
+            dataWriter.write_orc_file(start_date, end_date)
+        elif file_format == 'xlsx' or file_format == 'excel':
+            dataWriter.write_xlsx_file(start_date, end_date)
+        elif file_format == 'parquet':
+            dataWriter.write_parquet_file(start_date, end_date)
+        else:
+            success = False
+    except:
+        success = False
+
+    return success
+
+
 
 
 def main():
+    """This function expects 2 arguments from the command line. File format and year:
+       
+       file_format (str): Type of file to write the data in
+       year (int): Year to download the data from
+    """
 
-    dw = DataWriter()
+    dataWriter = DataWriter()
 
-    dw.write_avro_file("2018-01-01", "2019-01-01")
-    dw.write_parquet_file("2019-01-01", "2020-01-01")
-    dw.write_csv_file("2020-01-01", "2021-01-01")
-    dw.write_json_file("2021-01-01", "2022-01-01")
-    dw.write_orc_file("2022-01-01", "2023-01-01")
-    dw.write_xlsx_file("2023-01-01", "2024-01-01")
+    file_format = sys.argv[1]
+    year = sys.argv[2]
+
+    if write_selected_data(dataWriter, file_format, year):
+        print("Data downloaded and written successfuly")
+    else:
+        print("There was an error. The format for the command is: python3 main.py {file_format} {year}")
 
     return
 
