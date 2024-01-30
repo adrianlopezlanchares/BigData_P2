@@ -1,4 +1,4 @@
-from write_data_files import DataWriter
+from datawriter import DataWriter
 
 
 def main():
