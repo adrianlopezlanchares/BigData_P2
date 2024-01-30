@@ -13,8 +13,9 @@ from data_download import *
 class DataWriter(object):
     """Class that handles writing data to files."""
 
-    def __init__(self):
+    def __init__(self, path):
         """Constructor for DataWriter class."""
+        self.path = path
         return
     
 
@@ -47,14 +48,14 @@ class DataWriter(object):
         parsed_schema = parse_schema(schema)
 
 
-        with open(f"data/stock_data_{year}.avro", "wb") as out:
+        with open(f"{self.path}/stock_data_{year}.avro", "wb") as out:
             for df in get_companies_dataframe(start_date, end_date):
                 records = df.to_dict("records")
                 writer(out, parsed_schema, records)
                 
                 break
 
-        with open(f"data/stock_data_{year}.avro", "a+b") as out:
+        with open(f"{self.path}stock_data_{year}.avro", "a+b") as out:
             i = 0
             for df in get_companies_dataframe(start_date, end_date):
                 if i != 0:
@@ -77,7 +78,7 @@ class DataWriter(object):
 
         for df in get_companies_dataframe(start_date, end_date):
             table = pa.Table.from_pandas(df)
-            pq.write_to_dataset(table, f'data/stock_data_{year}.parquet')
+            pq.write_to_dataset(table, f'{self.path}/stock_data_{year}.parquet')
 
         return
 
@@ -92,7 +93,7 @@ class DataWriter(object):
 
         year = start_date[:4]
         
-        with open(f"data/stock_data_{year}.csv", "w", newline='') as file:
+        with open(f"{self.path}/stock_data_{year}.csv", "w", newline='') as file:
             writer = csv.writer(file)
 
             first_line = True
@@ -117,7 +118,7 @@ class DataWriter(object):
         """
 
         year = start_date[:4]
-        with open(f"data/stock_data_{year}.json", 'w') as file:
+        with open(f"{self.path}/stock_data_{year}.json", 'w') as file:
             # Start writing the JSON array
             file.write('[')
             
@@ -148,7 +149,7 @@ class DataWriter(object):
         schema = "struct<Date:string,Ticker:string,CIK:string,Open:float,High:float,Low:float,Close:float,Adj_Close:float,Volume:int>"
 
         year = start_date[:4]
-        with open(f"data/stock_data_{year}.orc", "wb") as file:
+        with open(f"{self.path}/stock_data_{year}.orc", "wb") as file:
             with pyorc.Writer(file, schema) as writer:
                 for df in get_companies_dataframe(start_date, end_date):
                     records = df.to_dict("records")
@@ -172,7 +173,7 @@ class DataWriter(object):
         year = start_date[:4]
         current_row = 0
         
-        with pd.ExcelWriter(f"data/stock_data_{year}.xlsx") as writer:
+        with pd.ExcelWriter(f"{self.path}/stock_data_{year}.xlsx") as writer:
             for df in get_companies_dataframe(start_date, end_date):
                 
                 # Write the DataFrame to the Excel file

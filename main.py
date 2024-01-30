@@ -1,5 +1,8 @@
-from datawriter import DataWriter
 import sys 
+import json
+
+# own imports
+from datawriter import DataWriter
 
 
 def write_selected_data(dataWriter: DataWriter, file_format: str, year: int) -> bool:
@@ -16,25 +19,22 @@ def write_selected_data(dataWriter: DataWriter, file_format: str, year: int) -> 
     """
     success = True
 
-    try:
-        start_date = f"{year}-01-01"
-        end_date = f"{int(year) + 1}-01-01"
+    start_date = f"{year}-01-01"
+    end_date = f"{int(year) + 1}-01-01"
 
-        file_format = file_format.lower()
+    file_format = file_format.lower()
 
-        if file_format == 'csv':
-            dataWriter.write_csv_file(start_date, end_date)
-        elif file_format == 'json':
-            dataWriter.write_json_file(start_date, end_date)
-        elif file_format == 'orc':
-            dataWriter.write_orc_file(start_date, end_date)
-        elif file_format == 'xlsx' or file_format == 'excel':
-            dataWriter.write_xlsx_file(start_date, end_date)
-        elif file_format == 'parquet':
-            dataWriter.write_parquet_file(start_date, end_date)
-        else:
-            success = False
-    except:
+    if file_format == 'csv':
+        dataWriter.write_csv_file(start_date, end_date)
+    elif file_format == 'json':
+        dataWriter.write_json_file(start_date, end_date)
+    elif file_format == 'orc':
+        dataWriter.write_orc_file(start_date, end_date)
+    elif file_format == 'xlsx' or file_format == 'excel':
+        dataWriter.write_xlsx_file(start_date, end_date)
+    elif file_format == 'parquet':
+        dataWriter.write_parquet_file(start_date, end_date)
+    else:
         success = False
 
     return success
@@ -49,7 +49,14 @@ def main():
        year (int): Year to download the data from
     """
 
-    dataWriter = DataWriter()
+    with open('config.json') as config_file:
+        config_file_data = config_file.read()
+
+    data = json.loads(config_file_data)
+    path = data['path']
+
+    dataWriter = DataWriter(path)
+
 
     file_format = sys.argv[1]
     year = sys.argv[2]
