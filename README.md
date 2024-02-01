@@ -19,3 +19,5 @@ Formatos soportados:
     -csv  
     -json  
     -xlsx  
+
+El año deberá estar entre el año 2018 y el 2024
