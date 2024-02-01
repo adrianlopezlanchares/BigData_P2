@@ -6,3 +6,4 @@ pyorc
 pandas
 yfinance
 os
+bs4
