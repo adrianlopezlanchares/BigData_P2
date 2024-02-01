@@ -61,30 +61,6 @@ def get_companies_cik(sector: str = "Consumer Discretionary") -> dict:
     return companies_ciks_dict
 
 
-def control_data_directory(path: str) -> bool:
-    """Given the path, the function checks if the data directory exists. If it doesn't, it creates it
-
-    Args:
-        path (str): Path to the data directory
-
-    Returns:
-        bool: True if the directory exists or was created, false if it wasn't
-    """
-    success = True
-
-    if os.path.isdir(path):
-        print(f"The directory {path} already exists")
-    else:
-        try:
-            os.mkdir(path)
-        except OSError:
-            print(f"Creation of the directory {path} failed")
-            success = False
-        else:
-            print(f"Successfully created the directory {path}")
-
-    return success
-
 
 def get_companies_dataframe(start_date: str, end_date: str,
         sector: str = "Consumer Discretionary", verbose: bool = False) -> pd.DataFrame:
@@ -134,3 +110,28 @@ def get_companies_dataframe(start_date: str, end_date: str,
         df["Date"] = df["Date"].astype(str)
 
         yield df
+
+
+def control_data_directory(path: str) -> bool:
+    """Given the path, the function checks if the data directory exists. If it doesn't, it creates it
+
+    Args:
+        path (str): Path to the data directory
+
+    Returns:
+        bool: True if the directory exists or was created, false if it wasn't
+    """
+    success = True
+
+    if os.path.isdir(path):
+        print(f"The directory {path} already exists")
+    else:
+        try:
+            os.mkdir(path)
+        except OSError:
+            print(f"Creation of the directory {path} failed")
+            success = False
+        else:
+            print(f"Successfully created the directory {path}")
+
+    return success
