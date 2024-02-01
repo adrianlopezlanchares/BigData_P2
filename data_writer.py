@@ -118,9 +118,20 @@ class DataWriter(object):
         
         year = start_date[:4]
 
+        first_iter = True
+
+
         for df in get_companies_dataframe(start_date, end_date):
-            table = pa.Table.from_pandas(df)
-            pq.write_to_dataset(table, f'{self.path}stock_data_{year}.parquet')
+            # table = pa.Table.from_pandas(df)
+            # pq.write_to_dataset(table, f'{self.path}stock_data_{year}.parquet')
+            if first_iter:
+                df_total = df
+                first_iter = False
+            
+            else:
+                df_total = pd.concat([df_total, df], ignore_index=True)
+
+        df_total.to_parquet(f"{self.path}/stock_data_{year}.parquet")
 
         return
 

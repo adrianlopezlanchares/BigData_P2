@@ -29,7 +29,7 @@ def main():
     # Follow different paths depending on the number of arguments received
     if len(command_args_received) == 1:
         # If no arguments are received, write all the data in all the formats
-        dataWriter.write_all_data(dataWriter)
+        dataWriter.write_all_data()
 
     elif len(sys.argv) == 2:
         # If one argument is received, raise an error
@@ -46,7 +46,7 @@ def main():
         try:
             year = int(year)
             if year in range(2018, 2024):
-                dataWriter.write_selected_data(dataWriter, file_format, year)
+                dataWriter.write_selected_data(file_format, year)
             else:
                 raise ValueError("The year is not correct. It must be between 2018 and 2023")
         except:

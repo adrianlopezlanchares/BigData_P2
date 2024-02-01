@@ -123,9 +123,7 @@ def control_data_directory(path: str) -> bool:
     """
     success = True
 
-    if os.path.isdir(path):
-        print(f"The directory {path} already exists")
-    else:
+    if not os.path.isdir(path):
         try:
             os.mkdir(path)
         except OSError:
