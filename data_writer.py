@@ -1,6 +1,4 @@
 from fastavro import parse_schema, writer
-import pyarrow as pa
-import pyarrow.parquet as pq
 import csv
 import json
 import pyorc

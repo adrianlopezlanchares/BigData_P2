@@ -1,5 +1,4 @@
 fastavro
-pyarrow
 csv
 json
 pyorc
