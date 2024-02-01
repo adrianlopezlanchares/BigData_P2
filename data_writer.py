@@ -7,7 +7,7 @@ import pyorc
 import pandas as pd
 
 # own imports
-from data_download import *
+from utils import get_companies_dataframe
 
 
 class DataWriter(object):
@@ -16,6 +16,49 @@ class DataWriter(object):
     def __init__(self, path):
         """Constructor for DataWriter class."""
         self.path = path
+        return
+    
+    def write_all_data(self) -> bool:
+        """This function writes all the data in all the formats
+
+        """
+        self.write_avro_file("2018-01-01", "2019-01-01")
+        self.write_parquet_file("2019-01-01", "2020-01-01")
+        self.write_csv_file("2020-01-01", "2021-01-01")
+        self.write_json_file("2021-01-01", "2022-01-01")
+        self.write_orc_file("2022-01-01", "2023-01-01")
+        self.write_xlsx_file("2023-01-01", "2024-01-01")
+
+        return
+    
+    def write_selected_data(self, file_format: str, year: int):
+        """Given the file format and the year, the function writes the data from said year into
+        the correct file format
+
+        Args:
+            dataWriter (DataWriter): DataWriter class that will write the data into the file
+            file_format (str): Selected file format (CSV, JSON, ORC, XLSX, AVRO, Parquet)
+            year (int): Year to download the data from
+        """
+
+        start_date = f"{year}-01-01"
+        end_date = f"{int(year) + 1}-01-01"
+
+        file_format = file_format.lower()
+
+        if file_format == 'avro':
+            self.write_avro_file(start_date, end_date)
+        elif file_format == 'parquet':
+            self.write_parquet_file(start_date, end_date)
+        if file_format == 'csv':
+            self.write_csv_file(start_date, end_date)
+        elif file_format == 'json':
+            self.write_json_file(start_date, end_date)
+        elif file_format == 'orc':
+            self.write_orc_file(start_date, end_date)
+        elif file_format == 'xlsx' or file_format == 'excel':
+            self.write_xlsx_file(start_date, end_date)
+
         return
     
 
@@ -65,7 +108,6 @@ class DataWriter(object):
 
         return
 
-
     def write_parquet_file(self, start_date: str, end_date: str):
         """Downloads data from the selected year and saves it in a .parquet dataset.
 
@@ -81,7 +123,6 @@ class DataWriter(object):
             pq.write_to_dataset(table, f'{self.path}stock_data_{year}.parquet')
 
         return
-
 
     def write_csv_file(self, start_date: str, end_date: str):
         """Downloads data from the selected year and saves it in a .csv file
@@ -107,7 +148,6 @@ class DataWriter(object):
                     writer.writerow(row)
 
         return
-
 
     def write_json_file(self, start_date: str, end_date: str):
         """Downloads data from the selected year and saves it in a .JSON file
@@ -137,7 +177,6 @@ class DataWriter(object):
 
         return
 
-
     def write_orc_file(self, start_date: str, end_date: str):
         """Downloads data from the selected year and saves it in a .orc file
 
@@ -160,7 +199,6 @@ class DataWriter(object):
                         writer.write(record)
         
         return
-
 
     def write_xlsx_file(self, start_date: str, end_date: str):
         """Downloads data from the selected year and saves it in a .xlsx file

@@ -3,7 +3,7 @@ import json
 
 # own imports
 from data_writer import DataWriter
-from utils import write_all_data, write_selected_data, control_data_directory
+from utils import control_data_directory
 
 
 def main():
@@ -29,7 +29,7 @@ def main():
     # Follow different paths depending on the number of arguments received
     if len(command_args_received) == 1:
         # If no arguments are received, write all the data in all the formats
-        write_all_data(dataWriter)
+        dataWriter.write_all_data(dataWriter)
 
     elif len(sys.argv) == 2:
         # If one argument is received, raise an error
@@ -46,7 +46,7 @@ def main():
         try:
             year = int(year)
             if year in range(2018, 2024):
-                write_selected_data(dataWriter, file_format, year)
+                dataWriter.write_selected_data(dataWriter, file_format, year)
             else:
                 raise ValueError("The year is not correct. It must be between 2018 and 2023")
         except:
