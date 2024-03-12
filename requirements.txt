@@ -6,3 +6,5 @@ pandas
 yfinance
 os
 bs4
+kafka-python
+requests
