@@ -13,17 +13,12 @@ class PyStreamCallback(StreamCallback):
         # Read the content of the incoming FlowFile
         content = io.BytesIO(inputStream.read())
 
-        # Create an ORC reader object
         reader = pyorc.Reader(content)
-
-        # Initialize an empty list to hold JSON objects
         json_data = []
 
-        # Iterate over each row in the ORC file
+        # Iterate over each row in the ORC file, and convert to list of dictionaries
         for row in reader:
-            # Convert the row to a dictionary
             row_dict = dict(zip(reader.schema.fields, row))
-            # Append the dictionary to the list
             json_data.append(row_dict)
 
         # Convert the list of dictionaries to JSON format
@@ -33,10 +28,7 @@ class PyStreamCallback(StreamCallback):
         outputStream.write(bytearray(json_output, "utf-8"))
 
 
-# Create a new instance of PyStreamCallback
 callback = PyStreamCallback()
-
-# Create a FlowFile session
 flowFile = session.get()
 
 if flowFile is not None:
